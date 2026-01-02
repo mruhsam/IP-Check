@@ -26,12 +26,12 @@ while True:
     formatted_date = datetime.fromtimestamp(timestamp).strftime("%m-%d-%y %H:%M:%S")
 
 
-    def get_score():
+    def get_score(): #
         score = data["data"]["attributes"]["last_analysis_stats"]
         malScore = score["malicious"]
         totalScore = 0
         
-        for x in score.values(): # getting total from each section
+        for x in score.values(): # getting vendor total from each section
             totalScore += int(x)
             
         if malScore > 0:

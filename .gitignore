@@ -3,3 +3,4 @@ idk
 venv/
 __pycache__/
 *.pyc
+ip_details.json

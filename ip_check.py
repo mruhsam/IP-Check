@@ -7,6 +7,8 @@ BASE_DIR = os.path.dirname(__file__)
 load_dotenv(os.path.join(BASE_DIR, "idk"))
 API_KEY = os.getenv("VT_API_KEY")
 
+choice = ""
+
 while True:
 
     print("Please input an ip address: ")
@@ -26,18 +28,30 @@ while True:
     formatted_date = datetime.fromtimestamp(timestamp).strftime("%m-%d-%y %H:%M:%S")
 
 
-    def get_score(): #
+    def get_score():
         score = data["data"]["attributes"]["last_analysis_stats"]
         malScore = score["malicious"]
+        susScore = score["suspicious"]
+        
         totalScore = 0
         
         for x in score.values(): # getting vendor total from each section
             totalScore += int(x)
             
+        # check both first
+        if malScore > 0 and susScore > 0:
+            return (
+                colored(f"Malicious: {malScore}/{totalScore}", "red")
+                + "  "
+                + colored(f"Suspicious: {susScore}/{totalScore}", "yellow")
+            )
+        
         if malScore > 0:
-            return colored(f"{malScore}/{totalScore}", "red")
+            return "Malicious!: " + colored(f"{malScore}/{totalScore}", "red")
+        if susScore > 0:
+            return "Suspicious!: " + colored(f"{susScore}/{totalScore}", "yellow")
         else:
-            return f"{malScore}/{totalScore}"
+            return "Beningn :) " + colored(f"{malScore}/{totalScore}", "green")
         
             
     print(get_score())
@@ -47,7 +61,14 @@ while True:
     with open("ip_details.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
-    print("Press 'x' to exit: " )
-    exit = input()
-    if exit == "x":
+           
+    while True:
+        choice = input("Press 'c' to check another IP, or 'x' to exit: ").lower().strip()
+        if choice in ("c", "x"):
+            break
+        print("please try again!")
+        
+    if choice == "c":
+        continue
+    else:
         break

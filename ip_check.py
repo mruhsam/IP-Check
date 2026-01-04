@@ -20,13 +20,9 @@ while True:
         headers={"accept": "application/json", "x-apikey": API_KEY},
         timeout=15,
     )
+   
     resp.raise_for_status()
-    data = resp.json()
-
-    lad = data["data"]["attributes"]["last_analysis_date"]
-    timestamp = int(lad)
-    formatted_date = datetime.fromtimestamp(timestamp).strftime("%m-%d-%y %H:%M:%S")
-
+    data = resp.json()  
 
     def get_score():
         score = data["data"]["attributes"]["last_analysis_stats"]
@@ -55,8 +51,17 @@ while True:
         
             
     print(get_score())
+    
+    try:
 
-    print(f"Last Analysis Date: {formatted_date}")
+        lad = data["data"]["attributes"]["last_analysis_date"]
+        timestamp = int(lad)
+        formatted_date = datetime.fromtimestamp(timestamp).strftime("%m-%d-%y %H:%M:%S")
+        print(f"Last Analysis Date: {formatted_date}")
+        
+    except Exception:
+        print("Cannot obtain analysis results for IP Address!")
+    
 
     with open("ip_details.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

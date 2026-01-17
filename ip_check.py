@@ -1,6 +1,7 @@
 import os, json, requests
 from datetime import datetime
 from termcolor import colored
+import re
 
 from dotenv import load_dotenv
 BASE_DIR = os.path.dirname(__file__)
@@ -20,8 +21,17 @@ while True:
         headers={"accept": "application/json", "x-apikey": API_KEY},
         timeout=15,
     )
+
    
+    if resp.status_code == 404:
+        print(colored("IP address not found. Please enter a valid IP address.", "red"))
+        continue
+    elif resp.status_code == 400:
+            print(colored("IP address not found. Please enter a valid IP address.", "red"))
+            continue    
+        
     resp.raise_for_status()
+    
     data = resp.json()  
 
     def get_score():
@@ -53,14 +63,15 @@ while True:
     print(get_score())
     
     try:
-
         lad = data["data"]["attributes"]["last_analysis_date"]
         timestamp = int(lad)
         formatted_date = datetime.fromtimestamp(timestamp).strftime("%m-%d-%y %H:%M:%S")
         print(f"Last Analysis Date: {formatted_date}")
         
-    except Exception:
+    except (NameError, KeyError):
         print("Cannot obtain analysis results for IP Address!")
+        print(f"Now peforming analysis on {ip}...")
+        # call ip analyze function
     
 
     with open("ip_details.json", "w", encoding="utf-8") as f:
@@ -69,11 +80,9 @@ while True:
            
     while True:
         choice = input("Press 'c' to check another IP, or 'x' to exit: ").lower().strip()
-        if choice in ("c", "x"):
+        if choice == "c":
             break
-        print("please try again!")
-        
-    if choice == "c":
-        continue
-    else:
-        break
+        elif choice == "x":
+            exit()
+        else:
+            print("please try again!")
